@@ -1,6 +1,6 @@
 ﻿namespace MFatihMAR.EasySockets
 {
-    public class TCPServer
+    public class TcpServer
     {
     }
 }

@@ -39,9 +39,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TCPClient.cs" />
-    <Compile Include="TCPServer.cs" />
-    <Compile Include="UDPSocket.cs" />
+    <Compile Include="TcpClient.cs" />
+    <Compile Include="TcpServer.cs" />
+    <Compile Include="UdpPeer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -15,15 +15,15 @@ namespace MFatihMAR.EasySockets
         public event DataEvent OnData;
         public event StopEvent OnStop;
 
-        private ValueWrapper<bool> _isOpen = new ValueWrapper<bool>(false);
-        public bool IsOpen => _isOpen.Value;
+        private ValueWrapper<bool> _isOpen;
+        public bool IsOpen => _isOpen?.Value ?? false;
         public IPEndPoint LocalIPEP { get; private set; }
-        public int BufferSize { get; private set; }
+        public ushort BufferSize { get; private set; }
 
         private Socket _socket;
         private Thread _thread;
 
-        public void Start(IPEndPoint localIPEP, int bufferSize = 512)
+        public void Start(IPEndPoint localIPEP, ushort bufferSize = 512)
         {
             _Cleanup();
 
@@ -35,7 +35,7 @@ namespace MFatihMAR.EasySockets
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             _socket.Bind(localIPEP);
 
-            _thread = new Thread(_Thread);
+            _thread = new Thread(_ReceiveThread);
             _thread.Start();
 
             LocalIPEP = (IPEndPoint)_socket.LocalEndPoint;
@@ -92,7 +92,7 @@ namespace MFatihMAR.EasySockets
             }
         }
 
-        private void _Thread()
+        private void _ReceiveThread()
         {
             try
             {

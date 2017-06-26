@@ -160,7 +160,8 @@ namespace MFatihMAR.EasySockets
         {
             try
             {
-                _isListening.Value = false;
+                if (_isListening != null)
+                    _isListening.Value = false;
 
                 _socket?.Close();
 

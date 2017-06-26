@@ -10,3 +10,27 @@ Compatible with Unity and Mono runtime.
 [Check out Examples project.](EasySockets.Examples)
 
 # API
+
+## UdpPeer
+
+### Event: OnStart
+
+### Event: OnData
+
+### Event: OnStop
+
+### Property: IsOpen
+
+### Property: LocalIPEP
+
+### Property: BufferSize
+
+### Method: Start
+
+### Method: Send
+
+### Method: Stop
+
+## TcpServer
+
+## TcpClient

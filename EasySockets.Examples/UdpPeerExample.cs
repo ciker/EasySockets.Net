@@ -24,7 +24,8 @@ namespace MFatihMAR.EasySockets.Examples
 
                 switch (blocks[0])
                 {
-                    default: Console.WriteLine("commands: start / send <ipep> <message> / stop / exit"); break;
+                    default: Console.WriteLine("commands: isOpen / start / send <ipep> <message> / stop / exit"); break;
+                    case "isOpen": Console.WriteLine(_peer.IsOpen ? "socket open" : "socket closed"); break;
                     case "start": _peer.Start(new IPEndPoint(IPAddress.Any, port)); break;
                     case "send":
                         {

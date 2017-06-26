@@ -40,8 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IPEndPointParser.cs" />
-    <Compile Include="TcpClientx.cs" />
-    <Compile Include="TcpServerx.cs" />
+    <Compile Include="TcpClient.cs" />
+    <Compile Include="TcpServer.cs" />
     <Compile Include="UdpPeer.cs" />
     <Compile Include="ValueWrapper.cs" />
   </ItemGroup>

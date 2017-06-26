@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -20,14 +21,21 @@ namespace MFatihMAR.EasySockets
             public ushort BufferSize { get; }
             public byte[] Buffer { get; }
 
-            public _Client(ValueWrapper<bool> isListening, Socket socket, ushort bufferSize, ParameterizedThreadStart threadFunction)
+            public IPEndPoint RemoteIPEP { get; }
+
+            private Action<_Client> _onClosed;
+
+            public _Client(ValueWrapper<bool> isListening, Socket socket, ushort bufferSize, ParameterizedThreadStart threadFunction, Action<_Client> onClosed)
             {
                 _isListening = isListening;
+
+                _onClosed = onClosed;
 
                 BufferSize = bufferSize;
                 Buffer = new byte[bufferSize];
 
                 Socket = socket;
+                RemoteIPEP = (IPEndPoint)socket.RemoteEndPoint;
 
                 Thread = new Thread(threadFunction);
                 Thread.Start(this);
@@ -37,6 +45,8 @@ namespace MFatihMAR.EasySockets
             {
                 try
                 {
+                    _onClosed(this);
+
                     _isClosed = true;
 
                     Socket?.Close();
@@ -67,7 +77,7 @@ namespace MFatihMAR.EasySockets
         public bool IsListening => _isListening?.Value ?? false;
         public IPEndPoint LocalIPEP { get; private set; }
         public ushort BufferSize { get; private set; }
-        public IPEndPoint[] Connections { get; }
+        public IPEndPoint[] Connections => _connectionsCached.Keys.ToArray();
 
         private ValueWrapper<bool> _isListening;
         private Socket _socket;
@@ -136,8 +146,8 @@ namespace MFatihMAR.EasySockets
                 return;
             }
 
-            _connectionsCached[remoteIPEP].Close();
             OnDisconnect?.Invoke(remoteIPEP);
+            _connectionsCached[remoteIPEP].Close();
         }
 
         public void Stop()
@@ -179,14 +189,21 @@ namespace MFatihMAR.EasySockets
                     var clientSocket = _socket.Accept();
                     var clientIPEP = (IPEndPoint)clientSocket.RemoteEndPoint;
 
+                    var client = new _Client(isListening, clientSocket, BufferSize, _ReceiveThread, (c) =>
+                    {
+                        lock (_connections)
+                        {
+                            _connections.Remove(c.RemoteIPEP);
+                            _connectionsCached.Remove(c.RemoteIPEP);
+                        }
+                    });
+
                     lock (_connections)
                     {
                         if (_connections.ContainsKey(clientIPEP))
                         {
                             continue;
                         }
-
-                        var client = new _Client(isListening, clientSocket, BufferSize, _ReceiveThread);
 
                         _connections.Add(clientIPEP, client);
                         _connectionsCached.Add(clientIPEP, client);
@@ -213,16 +230,23 @@ namespace MFatihMAR.EasySockets
             }
 
             var client = (_Client)source;
-            var clientIPEP = (IPEndPoint)client.Socket.RemoteEndPoint;
 
             try
             {
                 while (client.IsListening)
                 {
                     var recSize = client.Socket.Receive(client.Buffer, 0, client.BufferSize, SocketFlags.None);
+
+                    if (recSize == 0)
+                    {
+                        OnDisconnect?.Invoke(client.RemoteIPEP);
+                        client.Close();
+                        return;
+                    }
+
                     var packet = new byte[recSize];
                     Array.Copy(client.Buffer, packet, recSize);
-                    OnData?.Invoke(clientIPEP, packet);
+                    OnData?.Invoke(client.RemoteIPEP, packet);
                 }
             }
             catch (ThreadAbortException)
@@ -230,8 +254,8 @@ namespace MFatihMAR.EasySockets
             }
             catch (Exception ex)
             {
+                OnDisconnect?.Invoke(client.RemoteIPEP, ex);
                 client.Close();
-                OnDisconnect?.Invoke(clientIPEP, ex);
             }
         }
     }

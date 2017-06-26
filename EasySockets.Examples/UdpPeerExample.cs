@@ -69,7 +69,7 @@ namespace MFatihMAR.EasySockets.Examples
 
         private void _OnData(IPEndPoint remoteIPEP, byte[] data)
         {
-            Console.WriteLine($"[data] {remoteIPEP}: ({data.Length}) {Encoding.UTF8.GetString(data)}");
+            Console.WriteLine($"[data] {remoteIPEP} ({data.Length}) {Encoding.UTF8.GetString(data)}");
         }
 
         private void _OnStop(Exception exception)

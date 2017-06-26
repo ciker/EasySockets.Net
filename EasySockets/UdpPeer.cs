@@ -27,10 +27,10 @@ namespace MFatihMAR.EasySockets
         {
             _Cleanup();
 
-            _isOpen = new ValueWrapper<bool>(true);
-
             LocalIPEP = localIPEP ?? throw new ArgumentNullException(nameof(localIPEP));
             BufferSize = bufferSize;
+
+            _isOpen = new ValueWrapper<bool>(true);
 
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             _socket.Bind(localIPEP);

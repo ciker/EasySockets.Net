@@ -6,17 +6,28 @@ namespace MFatihMAR.EasySockets
     {
         public static IPEndPoint ToIPEP(this string source)
         {
-            return null;
-        }
+            var blocks = source.Split(':');
+            if (blocks.Length != 2)
+            {
+                return null;
+            }
 
-        public static bool TryParse(this IPEndPoint source, string ipepStr)
-        {
-            return false;
+            if (!IPAddress.TryParse(blocks[0], out IPAddress addr))
+            {
+                return null;
+            }
+
+            if (!ushort.TryParse(blocks[1], out ushort port))
+            {
+                return null;
+            }
+
+            return new IPEndPoint(addr, port);
         }
 
         public static IPEndPoint Parse(string ipepStr)
         {
-            return null;
+            return ipepStr.ToIPEP();
         }
     }
 }

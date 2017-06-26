@@ -166,7 +166,13 @@ namespace MFatihMAR.EasySockets
 
                 if (_thread != null && _thread.IsAlive)
                 {
-                    _thread.Abort();
+                    try
+                    {
+                        _thread.Abort();
+                    }
+                    catch
+                    {
+                    }
                 }
 
                 foreach (var conn in _connectionsCached)
@@ -174,8 +180,9 @@ namespace MFatihMAR.EasySockets
                     conn.Value.Close();
                 }
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e);
             }
         }
 
@@ -191,6 +198,11 @@ namespace MFatihMAR.EasySockets
 
                     var client = new _Client(isListening, clientSocket, BufferSize, _ReceiveThread, (c) =>
                     {
+                        if (!c.IsListening)
+                        {
+                            return;
+                        }
+
                         lock (_connections)
                         {
                             _connections.Remove(c.RemoteIPEP);

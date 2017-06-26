@@ -26,8 +26,9 @@ namespace MFatihMAR.EasySockets.Examples
 
                 switch (blocks[0])
                 {
-                    default: Console.WriteLine("commands: start / send <ipep> <message> / disconnect <ipep> / stop / exit"); break;
+                    default: Console.WriteLine("commands: isListening / start / send <ipep> <message> / disconnect <ipep> / stop / exit"); break;
                     case "start": _server.Start(new IPEndPoint(IPAddress.Any, port)); break;
+                    case "isListening": Console.WriteLine(_server.IsListening ? "server listening" : "server not listening"); break;
                     case "send":
                         {
                             if (blocks.Length < 3)

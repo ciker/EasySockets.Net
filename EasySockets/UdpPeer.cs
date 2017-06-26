@@ -28,7 +28,7 @@ namespace MFatihMAR.EasySockets
             _Cleanup();
 
             LocalIPEP = localIPEP ?? throw new ArgumentNullException(nameof(localIPEP));
-            BufferSize = bufferSize;
+            BufferSize = bufferSize < 64 ? throw new ArgumentOutOfRangeException(nameof(bufferSize)) : bufferSize;
 
             _isOpen = new ValueWrapper<bool>(true);
 

@@ -12,12 +12,14 @@ namespace MFatihMAR.EasySockets
                 return null;
             }
 
-            if (!IPAddress.TryParse(blocks[0], out IPAddress addr))
+            IPAddress addr;
+            if (!IPAddress.TryParse(blocks[0], out addr))
             {
                 return null;
             }
 
-            if (!ushort.TryParse(blocks[1], out ushort port))
+            ushort port;
+            if (!ushort.TryParse(blocks[1], out port))
             {
                 return null;
             }

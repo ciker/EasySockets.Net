@@ -34,8 +34,18 @@ namespace MFatihMAR.EasySockets
         {
             _Cleanup();
 
-            ServerIPEP = serverIPEP ?? throw new ArgumentNullException(nameof(serverIPEP));
-            BufferSize = bufferSize < 64 ? throw new ArgumentOutOfRangeException(nameof(bufferSize)) : bufferSize;
+            if (serverIPEP == null)
+            {
+                throw new ArgumentNullException(nameof(serverIPEP));
+            }
+
+            if (bufferSize < 64)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            }
+
+            ServerIPEP = serverIPEP;
+            BufferSize = bufferSize;
 
             _isOpen = new ValueWrapper<bool>(true);
 
